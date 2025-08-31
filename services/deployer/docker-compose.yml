@@ -1,0 +1,31 @@
+services:
+  deployer:
+    container_name: deployer
+    build:
+      context: .
+    restart: unless-stopped
+    networks:
+      - traefik-proxy
+    volumes:
+      # Espelha o código-fonte local para dentro do contêiner em tempo real
+      - .:/app
+      # Permite que o contêiner controle o Docker do host
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Mapeia o diretório onde os projetos são clonados
+      - /home/joaohenrique/Docker:/home/joaohenrique/Docker
+      # Mapeia as chaves SSH para clonar repositórios privados
+      - /root/.ssh/id_ed25519:/root/.ssh/id_rsa:ro
+      - /root/.ssh/known_hosts:/root/.ssh/known_hosts:ro
+    environment:
+      # Define explicitamente o caminho para o arquivo de configuração dentro do contêiner
+      - DEPLOYER_CONFIG_FILE=/app/config.json
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.deployer.rule=Host(`deployer.kabran.com.br`)"
+      - "traefik.http.routers.deployer.entrypoints=web,websecure"
+      - "traefik.http.routers.deployer.tls.certresolver=cloudflare"
+      - "traefik.http.services.deployer.loadbalancer.server.port=8080"
+
+networks:
+  traefik-proxy:
+    external: true

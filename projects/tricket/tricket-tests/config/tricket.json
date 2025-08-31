@@ -1,0 +1,292 @@
+{
+  "PROJECT_NAME": "Tricket",
+  "user_profiles": {
+    "admin": {
+      "email": "admin@tricket.com.br",
+      "password": "Senha#993",
+      "profile_data": {
+        "individual_data": {
+          "full_name": "PEDRO HENRIQUE CASTELAO FELISBERTO",
+          "birth_date": "1991-07-11",
+          "income_value_cents": null,
+          "contact_email": "admin@tricket.com.br",
+          "cpf": "11225284694",
+          "contact_phone": "31994964311"
+        },
+        "organization_data": {
+          "platform_role": "FORNECEDOR",
+          "company_name": "TRICKET SOLUCOES TECNOLOGICAS E INTERMEDIACOES LTDA",
+          "trade_name": "TRICKET",
+          "cnpj": "58074056000170",
+          "company_type": "LTDA",
+          "income_value": 50000,
+          "contact_email": "admin@tricket.com.br",
+          "contact_phone": "31994964311"
+        },
+        "address_data": {
+          "address_type": "MAIN",
+          "is_default": true,
+          "street": "AV BRIGADEIRO EDUARDO GOMES",
+          "number": "2040",
+          "complement": "Sala 305",
+          "neighborhood": "GLORIA",
+          "city_id": 2308,
+          "state_id": 11,
+          "zip_code": "31230130",
+          "country": "Brasil",
+          "latitude": -19.9051476,
+          "longitude": -44.0054797,
+          "notes": null
+        }
+      }
+    },    
+    "fornecedor": {
+      "email": "fornecedor5@tricket.com.br",
+      "password": "Senha#993",
+      "profile_data": {
+        "individual_data": {
+          "full_name": "José Fornecedor",
+          "cpf": "111.111.111-11",
+          "birth_date": "1993-02-03",
+          "income_value_cents": null,
+          "contact_email": "fornecedor5@tricket.com.br",
+          "contact_phone": "(31) 99999-9999"
+        },
+        "organization_data": {
+          "platform_role": "FORNECEDOR",
+          "company_name": "Coca-Cola Ltda",
+          "trade_name": "Coca-Cola",
+          "cnpj": "56216638000119",
+          "company_type": "MEI",
+          "income_value": 50000,
+          "contact_email": "fornecedor5@tricket.com.br",
+          "contact_phone": "31988887777"
+        },
+        "address_data": {
+          "address_type": "MAIN",
+          "is_default": true,
+          "street": "Rua Tapira",
+          "number": "150",
+          "complement": "11",
+          "neighborhood": "Renascença",
+          "city_id": 2308,
+          "state_id": 11,
+          "zip_code": "31130550",
+          "country": "Brasil",
+          "latitude": -19.8919206,
+          "longitude": -43.9415258,
+          "notes": null
+        }
+      }
+    },
+    "comerciante": {
+      "email": "comerciante5@tricket.com.br",
+      "password": "Senha#993",
+      "profile_data": {
+        "individual_data": {
+          "full_name": "Maria Comerciante",
+          "birth_date": "1993-02-03",
+          "income_value_cents": null,
+          "contact_email": "comerciante5tricket.com.br",
+          "cpf": "111.111.111-22",
+          "contact_phone": "(31) 99999-9988"
+        },
+        "organization_data": {
+          "platform_role": "COMERCIANTE",
+          "company_name": "Padaria Pampulha LTDA",
+          "trade_name": "Padaria Pampulha",
+          "cnpj": "71338040000196",
+          "company_type": "LTDA",
+          "income_value": 50000,
+          "contact_email": "comerciante5@tricket.com.br",
+          "contact_phone": "31988887766"
+        },
+        "address_data": {
+          "address_type": "MAIN",
+          "is_default": true,
+          "street": "Rua Dália",
+          "number": "150",
+          "complement": "130",
+          "neighborhood": "Santo André",
+          "city_id": 2308,
+          "state_id": 11,
+          "zip_code": "31230130",
+          "country": "Brasil",
+          "latitude": -19.9052491,
+          "longitude": -43.96018369999999,
+          "notes": null
+        }
+      }
+    },
+    "consumidor": {
+      "email": "consumidor5@tricket.com.br",
+      "password": "Senha#993",
+      "profile_data": {
+        "individual_data": {
+          "full_name": "João Henrique",
+          "birth_date": "1993-02-03",
+          "income_value_cents": 5000,
+          "contact_email": "consumidor5@tricket.com.br",
+          "cpf": "117.623.416-20",
+          "contact_phone": "(31) 98888-7623"
+        },
+        "organization_data": {
+          "platform_role": "CONSUMER",
+          "company_name": "João Henrique Pessoa Física",
+          "trade_name": "João Henrique",
+          "cnpj": "11762341620",
+          "company_type": "INDIVIDUAL",
+          "income_value": 5000,
+          "contact_email": "consumidor5@tricket.com.br",
+          "contact_phone": "(31) 98888-7623"
+        },
+        "address_data": {
+          "address_type": "MAIN",
+          "is_default": true,
+          "street": "Rua José Sanguinete",
+          "number": "185",
+          "complement": "166",
+          "neighborhood": "São João Batista (Venda Nova)",
+          "city_id": 2308,
+          "state_id": 11,
+          "zip_code": "31515220",
+          "country": "Brasil",
+          "latitude": -19.8236694,
+          "longitude": -43.9589118,
+          "notes": null
+        }
+      }
+    }
+    ,
+    "fornecedor3": {
+      "email": "fornecedor3@tricket.com.br",
+      "password": "Senha#993",
+      "profile_data": {
+        "individual_data": {
+          "full_name": "Fornecedor 3",
+          "cpf": "111.111.111-33",
+          "birth_date": "1993-02-03",
+          "income_value_cents": null,
+          "contact_email": "fornecedor3@tricket.com.br",
+          "contact_phone": "(31) 99999-9933"
+        },
+        "organization_data": {
+          "platform_role": "FORNECEDOR",
+          "company_name": "Fornecedor 3 Ltda",
+          "trade_name": "Fornecedor 3",
+          "cnpj": "56216638000133",
+          "company_type": "MEI",
+          "income_value": 50000,
+          "contact_email": "fornecedor3@tricket.com.br",
+          "contact_phone": "(31) 99999-9933"
+        },
+        "address_data": {
+          "address_type": "MAIN",
+          "is_default": true,
+          "street": "Avenida Ministro Guilhermino de Oliveira",
+          "number": "381",
+          "complement": "",
+          "neighborhood": "Santa Amélia",
+          "city_id": 2308,
+          "state_id": 11,
+          "zip_code": "31560100",
+          "country": "Brasil",
+          "latitude": -19.8436694,
+          "longitude": -43.9722914,
+          "geolocation": "0101000020E61000004E976A0B74FC45C0CDA2C1B7FAD733C0",
+          "notes": null
+        }
+      }
+    },
+    "fornecedor4": {
+      "email": "fornecedor4@tricket.com.br",
+      "password": "Senha#993",
+      "profile_data": {
+        "individual_data": {
+          "full_name": "Fornecedor 4",
+          "cpf": "111.111.111-44",
+          "birth_date": "1993-02-03",
+          "income_value_cents": null,
+          "contact_email": "fornecedor4@tricket.com.br",
+          "contact_phone": "(31) 99999-9944"
+        },
+        "organization_data": {
+          "platform_role": "FORNECEDOR",
+          "company_name": "Fornecedor 4 Ltda",
+          "trade_name": "Fornecedor 4",
+          "cnpj": "56216638000144",
+          "company_type": "MEI",
+          "income_value": 50000,
+          "contact_email": "fornecedor4@tricket.com.br",
+          "contact_phone": "(31) 99999-9944"
+        },
+        "address_data": {
+          "address_type": "MAIN",
+          "is_default": true,
+          "street": "Alameda Perpétuas",
+          "number": "381",
+          "complement": "",
+          "neighborhood": "Vila Sumaré",
+          "city_id": 2308,
+          "state_id": 11,
+          "zip_code": "31250004",
+          "country": "Brasil",
+          "latitude": -19.8879312,
+          "longitude": -43.9657868,
+          "geolocation": "0101000020E61000004974E0E69EFB45C0191989754FE333C0",
+          "notes": null
+        }
+      }
+    },
+    "fornecedor6": {
+      "email": "fornecedor6@tricket.com.br",
+      "password": "Senha#993",
+      "profile_data": {
+        "individual_data": {
+          "full_name": "Fornecedor 6",
+          "cpf": "111.111.111-55",
+          "birth_date": "1993-02-03",
+          "income_value_cents": null,
+          "contact_email": "fornecedor6@tricket.com.br",
+          "contact_phone": "(31) 99999-9966"
+        },
+        "organization_data": {
+          "platform_role": "FORNECEDOR",
+          "company_name": "Fornecedor 6 Ltda",
+          "trade_name": "Fornecedor 6",
+          "cnpj": "56216638000155",
+          "company_type": "MEI",
+          "income_value": 50000,
+          "contact_email": "fornecedor6@tricket.com.br",
+          "contact_phone": "(31) 99999-9966"
+        },
+        "address_data": {
+          "address_type": "MAIN",
+          "is_default": true,
+          "street": "Rua Capitão Bragança",
+          "number": "381",
+          "complement": "",
+          "neighborhood": "Horto",
+          "city_id": 2308,
+          "state_id": 11,
+          "zip_code": "31015016",
+          "country": "Brasil",
+          "latitude": -19.9091339,
+          "longitude": -43.9134935,
+          "geolocation": "0101000020E6100000E6CDE15AEDF445C0582FD0FFBCE833C0",
+          "notes": null
+        }
+      }
+    }
+  },
+  "operations": {
+    "Criar Conta de Usuário (por Perfil)": {
+      "module": "operations.auth",
+      "function": "create_user_from_profile"
+    },
+    "Cadastrar Perfil de Organização (por Perfil)": {
+      "module": "operations.profile",
+      "function": "register_organization_profile_from_config"
+    }
+  }
+}

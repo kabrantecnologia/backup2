@@ -1,0 +1,51 @@
+{
+    "1fa0dd68-5069-436c-9a7d-3b54c340f1fa": {
+        "id": "7f4c662c-78ad-4034-819f-2a96513abdf3",
+        "name": "Supabase Auth",
+        "designId": "f338e635-9483-4f9e-852d-bbb54a5e459f",
+        "pluginId": "1fa0dd68-5069-436c-9a7d-3b54c340f1fa",
+        "publicData": {
+            "apiKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzQ2NTAwNDAwLCJleHAiOjE5MDQyNjY4MDB9.F5ps8Ral3QcwRVWc5g0WLICiFAAR39IjDT36u_ZCyYY",
+            "roleTable": "rbac_roles",
+            "projectUrl": "https://api-dev-integra.kabran.com.br",
+            "userRoleTable": "rbac_user_roles",
+            "roleTableNameColumn": "name",
+            "afterForbiddenPageId": "8014af33-ec3c-4671-b6f2-7fc5ee5d4e12",
+            "afterNotSignInPageId": "8014af33-ec3c-4671-b6f2-7fc5ee5d4e12",
+            "userRoleTableRoleColumn": "role_id",
+            "userRoleTableUserColumn": "user_id"
+        }
+    },
+    "cabb43dd-6161-4140-8ebf-03b6fb045a0b": {
+        "id": "24ec8e3a-d7ce-47ee-b523-36964cbe6c4a",
+        "name": "Google",
+        "designId": "f338e635-9483-4f9e-852d-bbb54a5e459f",
+        "pluginId": "cabb43dd-6161-4140-8ebf-03b6fb045a0b",
+        "publicData": {}
+    },
+    "2bd1c688-31c5-443e-ae25-59aa5b6431fb": {
+        "id": "010e277b-2611-41d6-95e7-0def0aec468e",
+        "name": "REST API",
+        "designId": "f338e635-9483-4f9e-852d-bbb54a5e459f",
+        "pluginId": "2bd1c688-31c5-443e-ae25-59aa5b6431fb",
+        "publicData": {}
+    },
+    "66a79c98-70e7-4bc4-8859-20776b024ec2": {
+        "id": "f99da5d0-4835-4a13-a0e3-470af6142ea6",
+        "name": "PWA",
+        "designId": "f338e635-9483-4f9e-852d-bbb54a5e459f",
+        "pluginId": "66a79c98-70e7-4bc4-8859-20776b024ec2",
+        "publicData": {}
+    },
+    "f9ef41c3-1c53-4857-855b-f2f6a40b7186": {
+        "id": "68a0dfda-5f03-4243-ad38-84644ae3b801",
+        "name": "Supabase",
+        "designId": "f338e635-9483-4f9e-852d-bbb54a5e459f",
+        "pluginId": "f9ef41c3-1c53-4857-855b-f2f6a40b7186",
+        "publicData": {
+            "apiKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzQ2NTAwNDAwLCJleHAiOjE5MDQyNjY4MDB9.F5ps8Ral3QcwRVWc5g0WLICiFAAR39IjDT36u_ZCyYY",
+            "projectUrl": "https://api-dev-integra.kabran.com.br",
+            "realtimeTables": {}
+        }
+    }
+}

@@ -1,0 +1,134 @@
+# Cappta Simulator Provider for Traefik
+# File: providers/cappta-simulator.yml
+# Description: Configura roteamento do subdomínio simulador-cappta.kabran.com.br
+
+http:
+  services:
+    cappta-simulator:
+      loadBalancer:
+        servers:
+          - url: "http://cappta-simulator:8000"
+        healthCheck:
+          path: "/health/ready"
+          interval: "30s"
+          timeout: "5s"
+          headers:
+            User-Agent: "Traefik-HealthCheck"
+          
+  routers:
+    # HTTPS Router (Primary)
+    cappta-simulator-secure:
+      rule: "Host(`simulador-cappta.kabran.com.br`)"
+      service: cappta-simulator
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+      middlewares:
+        - cappta-cors
+        - cappta-headers
+        - cappta-ratelimit
+        - cappta-auth-headers
+        
+    # HTTP Router (Redirect to HTTPS)
+    cappta-simulator-redirect:
+      rule: "Host(`simulador-cappta.kabran.com.br`)"
+      service: cappta-simulator
+      entryPoints:
+        - web
+      middlewares:
+        - https-redirect
+
+  middlewares:
+    # CORS Configuration for Cappta Simulator
+    cappta-cors:
+      headers:
+        accessControlAllowOriginList:
+          - "https://dev2.tricket.kabran.com.br"
+          - "https://simulador-cappta.kabran.com.br"
+          - "http://localhost:3000"  # For development
+        accessControlAllowMethods:
+          - "GET"
+          - "POST"
+          - "PUT"
+          - "DELETE"
+          - "PATCH"
+          - "OPTIONS"
+        accessControlAllowHeaders:
+          - "Content-Type"
+          - "Authorization"
+          - "X-Requested-With"
+          - "X-Request-ID"
+          - "X-Client-Info"
+          - "X-Cappta-Signature"
+        accessControlExposeHeaders:
+          - "X-Request-ID"
+          - "X-Processing-Time"
+          - "X-RateLimit-Limit"
+          - "X-RateLimit-Remaining"
+          - "X-RateLimit-Reset"
+        accessControlMaxAge: 86400
+        accessControlAllowCredentials: true
+        
+    # Security Headers
+    cappta-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+          X-Forwarded-Host: "simulador-cappta.kabran.com.br"
+          X-Real-IP: "{{.RemoteAddr}}"
+        customResponseHeaders:
+          X-Content-Type-Options: "nosniff"
+          X-Frame-Options: "DENY"
+          X-XSS-Protection: "1; mode=block"
+          Referrer-Policy: "strict-origin-when-cross-origin"
+          Strict-Transport-Security: "max-age=31536000; includeSubDomains"
+          Content-Security-Policy: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+          
+    # Rate Limiting (Traefik Level)
+    cappta-ratelimit:
+      rateLimit:
+        average: 100      # 100 requests per period
+        burst: 200        # Allow burst of 200 requests
+        period: "1m"      # 1 minute window
+        sourceCriterion:
+          ipStrategy:
+            depth: 1      # Use first IP in X-Forwarded-For
+            
+    # Authentication Headers Passthrough
+    cappta-auth-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-User: ""
+          X-Original-URL: "{{.Request.URL}}"
+          X-Original-Method: "{{.Request.Method}}"
+          
+    # HTTPS Redirect
+    https-redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true
+        port: "443"
+
+# TCP Services (if needed for future websocket support)
+tcp:
+  services:
+    cappta-simulator-tcp:
+      loadBalancer:
+        servers:
+          - address: "cappta-simulator:8000"
+
+# TLS Configuration
+tls:
+  options:
+    cappta-tls:
+      minVersion: "VersionTLS12"
+      maxVersion: "VersionTLS13"
+      cipherSuites:
+        - "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+        - "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305"
+        - "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+      curvePreferences:
+        - "CurveP521"
+        - "CurveP384"
+      sniStrict: true

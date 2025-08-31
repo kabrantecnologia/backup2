@@ -1,0 +1,31 @@
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: always
+    # No Ollama: we'll configure API providers (e.g., n8n) inside the WebUI after first run
+    environment:
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
+      # Optionally set a dummy key if your n8n flow expects one:
+      # - OPENAI_API_KEY=anyvalue
+      # Enable offline mode if the host has no internet access
+      # - HF_HUB_OFFLINE=1
+    volumes:
+      - open_webui_data:/app/backend/data
+    networks:
+      - ${TRAEFIK_NETWORK}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NETWORK}"
+      - "traefik.http.routers.open-webui.rule=Host(`${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.open-webui.entrypoints=websecure"
+      - "traefik.http.routers.open-webui.tls.certresolver=${TRAEFIK_CERTRESOLVER}"
+      - "traefik.http.services.open-webui.loadbalancer.server.port=8080"
+
+volumes:
+  open_webui_data:
+    name: ${OPENWEBUI_VOLUME_NAME:-open-webui}
+
+networks:
+  traefik-proxy:
+    external: true

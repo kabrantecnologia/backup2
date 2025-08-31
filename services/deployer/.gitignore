@@ -1,0 +1,6 @@
+# Arquivos de ambiente local (senhas, chaves) - NUNCA versionar!
+.env
+config.json
+
+# Pastas
+__pycache__/

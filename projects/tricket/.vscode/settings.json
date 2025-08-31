@@ -1,0 +1,7 @@
+{
+  "python.defaultInterpreterPath": "/home/joaohenrique/workspaces/projects/tricket/tricket-tests/.venv/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/tricket-tests"
+  ]
+}

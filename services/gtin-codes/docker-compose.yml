@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  barcode-scraper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: barcode-scraper
+    volumes:
+      - ./data:/app/data  # Volume para persistir os dados coletados
+      - ./logs:/app/logs  # Volume para armazenar logs
+    restart: unless-stopped  # Reiniciar automaticamente caso o contêiner pare inesperadamente
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONIOENCODING=utf-8
+      - LOG_LEVEL=DEBUG  # Aumenta o nível de log para debug
+      - SITEMAP_URL=https://b2c.meggadistribuidora.com.br/sitemap-produtos-13.xml
+      - OUTPUT_FILE=/app/data/barcodes_robust.csv
+      - REQUEST_TIMEOUT=60000  # 60 segundos
+      - DELAY_BETWEEN_REQUESTS=1  # 1 segundo entre requisições
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

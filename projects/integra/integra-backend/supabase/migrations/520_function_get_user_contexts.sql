@@ -1,0 +1,215 @@
+/**********************************************************************************************************************
+*   -- INFORMAÇÕES DO SCRIPT --
+*   NOME DO ARQUIVO: 13_TRK_function_get_user_contexts.sql
+*   VERSÃO: 2.0 - INTEGRA PROJECT
+*   REFATORADO POR: Cascade AI
+*   DATA DE REFATORAÇÃO: 2025-07-31
+*
+*   -- SUMÁRIO --
+*   1 - GET_USER_CONTEXTS (Adaptado para estrutura Integra)
+*   2 - GET_NAVIGATION_FOR_USER
+*
+*   -- MUDANÇAS --
+*   - Removido sistema iam_profiles/individual_details/organization_details
+*   - Adaptado para core_users, core_people, rbac_roles
+*   - Simplificado para estrutura unificada do projeto Integra
+*
+**********************************************************************************************************************/
+
+/**********************************************************************************************************************
+*   SEÇÃO 1: FUNÇÃO PRINCIPAL - GET_USER_CONTEXTS
+*   Descrição: Função que consolida os dados de contexto do usuário para o projeto Integra.
+**********************************************************************************************************************/
+
+-- Cria a nova versão da função, adaptada para a estrutura do projeto Integra.
+CREATE OR REPLACE FUNCTION public.get_user_contexts()
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+DECLARE
+    v_auth_user_id UUID := auth.uid();
+    v_user_data JSONB;
+    v_user_profile JSONB;
+    v_rbac_user_roles JSONB;
+BEGIN
+    -- 1. Validação de Autenticação
+    IF v_auth_user_id IS NULL THEN
+        RETURN jsonb_build_object('error', 'Usuário não autenticado');
+    END IF;
+
+    -- 2. Coleta de Dados Básicos do Usuário
+    SELECT jsonb_build_object(
+        'user_id', u.id,
+        'email', u.email,
+        'email_confirmed', (u.email_confirmed_at IS NOT NULL),
+        'is_team_member', EXISTS (
+            SELECT 1 FROM public.rbac_user_roles ur
+            JOIN public.rbac_roles r ON ur.role_id = r.id
+            WHERE ur.user_id = u.id AND r.name IN ('ADMIN', 'SUPPORT')
+        )
+    ) INTO v_user_data
+    FROM auth.users u
+    WHERE u.id = v_auth_user_id;
+
+    IF v_user_data IS NULL THEN 
+        RETURN jsonb_build_object('error', 'Usuário não encontrado');
+    END IF;
+
+    -- 3. Coleta do Perfil do Usuário (core_users + core_people)
+    SELECT jsonb_build_object(
+        'user_id', cu.id,
+        'person_id', cu.person_id,
+        'login', cu.login,
+        'email', cu.email,
+        'access_level', cu.access_level,
+        'last_access', cu.last_access,
+        'person_name', cp.name,
+        'person_type', cp.type,
+        'document', cp.document,
+        'birth_date', cp.birth_date,
+        'gender', cp.gender,
+        'department_id', cp.department_id,
+        'status', cu.status,
+        'created_at', cu.created_at
+    ) INTO v_user_profile
+    FROM public.core_users cu
+    LEFT JOIN public.core_people cp ON cu.person_id = cp.id
+    WHERE cu.id = v_auth_user_id;
+
+    -- 4. Coleta dos Roles do Usuário
+    SELECT jsonb_agg(jsonb_build_object(
+        'role_id', r.id,
+        'role_name', r.name,
+        'role_description', r.description,
+        'role_level', r.level
+    )) INTO v_rbac_user_roles
+    FROM public.rbac_user_roles ur
+    JOIN public.rbac_roles r ON ur.role_id = r.id
+    WHERE ur.user_id = v_auth_user_id;
+
+    -- 5. Retorno Final - Estrutura simplificada para o projeto Integra
+    RETURN jsonb_build_object(
+        'user', v_user_data,
+        'profile', COALESCE(v_user_profile, '{}'::jsonb),
+        'roles', COALESCE(v_rbac_user_roles, '[]'::jsonb),
+        'navigation', public.get_navigation_for_user()
+    );
+END;
+$$;
+
+/**********************************************************************************************************************
+*   SEÇÃO 2: PERMISSÕES E METADADOS
+*   Descrição: Concede as permissões necessárias e adiciona comentários à função.
+**********************************************************************************************************************/
+
+-- Concede permissão de execução para qualquer usuário autenticado.
+GRANT EXECUTE ON FUNCTION public.get_user_contexts() TO authenticated;
+
+-- Adiciona um comentário descritivo à função.
+COMMENT ON FUNCTION public.get_user_contexts() IS 'Retorna um objeto JSONB com dados do usuário, perfil (core_users + core_people), roles (rbac) e navegação para o projeto Integra.';
+
+-- =====================================================================
+-- SEÇÃO 4: FUNÇÃO DE NAVEGAÇÃO DA UI
+-- Descrição: Constrói a estrutura de navegação completa para o usuário.
+-- Esta função é genérica e não precisa de alterações.
+-- =====================================================================
+
+CREATE OR REPLACE FUNCTION public.get_navigation_for_user()
+RETURNS JSONB AS $$
+DECLARE
+    user_roles_ids UUID[];
+    result_json JSONB;
+BEGIN
+    -- 1. Obtém os IDs dos papéis (roles) do usuário logado.
+    SELECT ARRAY_AGG(role_id) INTO user_roles_ids
+    FROM public.rbac_user_roles
+    WHERE user_id = auth.uid();
+
+    -- 2. Constrói a estrutura de navegação de forma recursiva e hierárquica.
+    WITH RECURSIVE accessible_elements AS (
+        SELECT el.*
+        FROM public.ui_app_elements el
+        JOIN public.ui_role_element_permissions rep ON el.id = rep.element_id
+        WHERE rep.role_id = ANY(user_roles_ids)
+        UNION
+        SELECT el.*
+        FROM public.ui_app_elements el
+        INNER JOIN accessible_elements ae ON el.id = ae.parent_id
+    ),
+    page_menus AS (
+        SELECT
+            p.id AS page_id,
+            jsonb_agg(jsonb_build_object('id', el.id, 'label', el.label, 'icon', el.icon, 'path', el.path) ORDER BY el.position) AS tabs
+        FROM accessible_elements el
+        JOIN public.ui_app_pages p ON el.page_id = p.id
+        WHERE el.element_type = 'PAGE_TAB'
+        GROUP BY p.id
+    ),
+    grid_configs AS (
+        SELECT
+            g.page_id,
+            jsonb_build_object(
+                'id', g.id,
+                'collection_id', g.collection_id,
+                'description', g.description,
+                'columns', COALESCE(gc.columns_agg, '[]'::jsonb)
+            ) AS grid_config
+        FROM public.ui_grids g
+        LEFT JOIN (
+            SELECT
+                grid_id,
+                jsonb_agg(jsonb_build_object(
+                    'data_key', data_key,
+                    'label', label,
+                    'size', size,
+                    'position', position,
+                    'is_visible', is_visible
+                ) ORDER BY position) AS columns_agg
+            FROM public.ui_grid_columns
+            GROUP BY grid_id
+        ) gc ON g.id = gc.grid_id
+    ),
+    menu_tree AS (
+        SELECT
+            el.id, el.label, el.icon, el.path, el.parent_id, el.position, el.page_id,
+            pm.tabs AS page_menu,
+            gc.grid_config AS grid,
+            (SELECT jsonb_agg(sub_items ORDER BY (sub_items->>'position')::int) FROM (
+                SELECT jsonb_build_object(
+                    'id', sub.id,
+                    'label', sub.label,
+                    'icon', sub.icon,
+                    'path', sub.path,
+                    'position', sub.position,
+                    'pageMenu', COALESCE(sub_pm.tabs, '[]'::jsonb),
+                    'grid', sub_gc.grid_config
+                ) AS sub_items
+                FROM accessible_elements sub
+                LEFT JOIN page_menus sub_pm ON sub_pm.page_id = sub.page_id
+                LEFT JOIN grid_configs sub_gc ON sub_gc.page_id = sub.page_id
+                WHERE sub.parent_id = el.id AND sub.element_type = 'SIDEBAR_MENU'
+            ) AS sub_query) AS "subItems"
+        FROM accessible_elements el
+        LEFT JOIN page_menus pm ON pm.page_id = el.page_id
+        LEFT JOIN grid_configs gc ON gc.page_id = el.page_id
+        WHERE el.parent_id IS NULL AND el.element_type = 'SIDEBAR_MENU'
+    )
+    -- 3. Agrega o resultado final em um único array JSON.
+    SELECT jsonb_agg(jsonb_build_object(
+        'id', mt.id,
+        'icon', mt.icon,
+        'label', mt.label,
+        'path', mt.path,
+        'isOpened', false,
+        'pageMenu', COALESCE(mt.page_menu, '[]'::jsonb),
+        'grid', mt.grid,
+        'subItems', COALESCE(mt."subItems", '[]'::jsonb)
+    ) ORDER BY mt.position) INTO result_json
+    FROM menu_tree mt;
+
+    RETURN COALESCE(result_json, '[]'::jsonb);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
+COMMENT ON FUNCTION public.get_navigation_for_user() IS 'Retorna uma estrutura JSON completa com o menu principal, menus de página (abas) e configurações de grid, de acordo com as permissões do usuário.';

@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run tricket-tests main.py",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/tricket-tests/main.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/tricket-tests",
+      "justMyCode": true,
+      "env": {
+        // Permite execução não interativa selecionando a operação automaticamente
+        // "TRICKET_OP": "1"
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+# Arquivos de ambiente local (senhas, chaves) - NUNCA versionar!
+.env
+
+# Arquivos de log e dados gerados em tempo de execução
+# O conteúdo da pasta de dados do PostgreSQL dentro de volumes/db/data/
+# Essa é a principal causa da permissão negada e do erro de push.
+volumes/db/data/
+volumes/storage/
+legado/
+logs/
+.windsurf/
+supabase/.temp/
+legado-migration-data/
+legado/legado-migration/
+# Pastas e arquivos gerados pelo Docker
+*.env.backup
+*.tmp
+*.log
+temp/

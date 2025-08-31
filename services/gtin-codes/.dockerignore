@@ -1,0 +1,16 @@
+# Ignorar arquivos desnecessários no build do Docker
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+*.log
+*.csv
+.git
+.gitignore
+Dockerfile
+docker-compose.yml
+README.md

@@ -1,0 +1,9 @@
+# Arquivos de ambiente local (senhas, chaves) - NUNCA versionar!
+.env
+docker-compose.override.yml
+
+# Pastas
+logs/
+providers/
+letsencrypt/
+auth/

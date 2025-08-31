@@ -1,0 +1,20 @@
+name: compliance-app
+services:
+  compliance:
+    image: compliance:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: compliance
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.compliance.rule=Host(`app.staging.compliance-e.com.br`)"
+      - "traefik.http.routers.compliance.entrypoints=web,websecure"
+      - "traefik.http.routers.compliance.tls.certresolver=cloudflare"
+      - "traefik.http.services.compliance.loadbalancer.server.port=80"
+    networks:
+      - traefik-proxy
+networks:
+  traefik-proxy:
+    external: true

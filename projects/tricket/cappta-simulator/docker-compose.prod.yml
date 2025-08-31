@@ -1,0 +1,110 @@
+# Docker Compose for Cappta Simulator - Production (dev2)
+# File: docker-compose.prod.yml
+
+version: '3.8'
+
+services:
+  cappta-simulator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cappta-simulator
+    restart: unless-stopped
+    environment:
+      # Environment Configuration
+      - ENVIRONMENT=prod
+      - DEBUG=false
+      - LOG_LEVEL=info
+      
+      # API Configuration
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - BASE_URL=https://simulador-cappta.kabran.com.br
+      
+      # Authentication & Security
+      - API_TOKEN=cappta_fake_token_dev_123
+      - ALLOWED_IPS=["0.0.0.0/0"]
+      - TOKEN_EXPIRY_HOURS=24
+      
+      # Rate Limiting
+      - RATE_LIMIT_REQUESTS_PER_MINUTE=1000
+      - RATE_LIMIT_BURST=100
+      - RATE_LIMIT_ENABLED=true
+      
+      # Asaas Integration (SUBSTITUIR PELOS VALORES REAIS)
+      - ASAAS_API_KEY=${CAPPTA_ASAAS_API_KEY}
+      - ASAAS_BASE_URL=https://sandbox.asaas.com/api/v3
+      - CAPPTA_MASTER_ACCOUNT_ID=${CAPPTA_ASAAS_ACCOUNT_ID}
+      
+      # Tricket Integration
+      - TRICKET_WEBHOOK_URL=https://dev2.tricket.kabran.com.br/functions/v1/cappta_webhook_receiver
+      - TRICKET_WEBHOOK_SECRET=${CAPPTA_WEBHOOK_SECRET}
+      - TRICKET_API_BASE=https://dev2.tricket.kabran.com.br
+      
+      # Webhook System
+      - WEBHOOK_SIGNATURE_SECRET=${CAPPTA_WEBHOOK_SIGNATURE_SECRET}
+      - WEBHOOK_TIMEOUT=30
+      - WEBHOOK_RETRY_ATTEMPTS=5
+      - WEBHOOK_RETRY_DELAY=60
+      
+      # Database Configuration
+      - DATABASE_URL=sqlite:///./data/cappta_simulator_prod.db
+      - DATABASE_POOL_SIZE=20
+      - DATABASE_ECHO=false
+      
+      # Monitoring & Observability
+      - PROMETHEUS_ENABLED=true
+      - HEALTH_CHECK_INTERVAL=30
+      
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persistent data storage
+      - cappta-data:/app/data
+      - cappta-logs:/app/logs
+      # Configuration persistence
+      - ./config:/app/config:ro
+    networks:
+      - traefik-proxy
+      - cappta-internal
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      # Traefik configuration
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-proxy"
+      - "traefik.http.services.cappta-simulator.loadbalancer.server.port=8000"
+      
+      # Health check for load balancer
+      - "traefik.http.services.cappta-simulator.loadbalancer.healthcheck.path=/health/ready"
+      - "traefik.http.services.cappta-simulator.loadbalancer.healthcheck.interval=30s"
+      - "traefik.http.services.cappta-simulator.loadbalancer.healthcheck.timeout=5s"
+      
+      # Backup labels for monitoring
+      - "backup.enabled=true"
+      - "backup.path=/app/data"
+      - "backup.schedule=daily"
+
+volumes:
+  cappta-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/cappta-simulator/data
+  cappta-logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/cappta-simulator/logs
+
+networks:
+  traefik-proxy:
+    external: true
+  cappta-internal:
+    driver: bridge

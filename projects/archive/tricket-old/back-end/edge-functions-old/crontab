@@ -1,0 +1,9 @@
+# Configuração de cron jobs para funções Edge do Supabase
+# Formato: SCHEDULE ENVIRONMENT? FUNCTION_NAME TOKEN?
+# SCHEDULE: expressão cron em formato Unix (* * * * *)
+# ENVIRONMENT: (opcional) variáveis de ambiente específicas para o job
+# FUNCTION_NAME: nome da função Edge a ser executada 
+# TOKEN: (opcional) token de invocação para funções que exigem autenticação
+
+# Processa eventos de webhook a cada 2 minutos
+*/2 * * * * webhook_event_processor

@@ -1,0 +1,77 @@
+services:
+  traefik:
+    image: ${IMAGE_TRAEFIK}
+    container_name: traefik-main
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - traefik-proxy
+
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /home/joaohenrique/workspaces/services/traefik/letsencrypt:/letsencrypt
+      - /home/joaohenrique/workspaces/services/traefik/providers:/providers # Monta o diretório de provedores
+      - /home/joaohenrique/workspaces/services/traefik/auth:/etc/traefik/auth # Monta o diretório de autenticação
+    environment:
+      - CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL}
+      - CLOUDFLARE_API_KEY=${CLOUDFLARE_API_KEY}
+      - CF_API_EMAIL=${CLOUDFLARE_EMAIL}
+      - CF_API_KEY=${CLOUDFLARE_API_KEY}
+    command:
+      # API e Dashboard
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+      
+      # Provedores
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.file.directory=/providers"
+      - "--providers.file.watch=true"
+      
+      # Entradas
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      
+      # Redirecionamento HTTP para HTTPS
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      
+      # Configuração TLS para múltiplos domínios
+      - "--entrypoints.websecure.http.tls.certresolver=cloudflare"
+      - "--entrypoints.websecure.http.tls.domains[0].main=kabran.com.br"
+      - "--entrypoints.websecure.http.tls.domains[0].sans=*.kabran.com.br,*.supabase.kabran.com.br,*.typebot.kabran.com.br"
+      - "--entrypoints.websecure.http.tls.domains[1].main=nacj.kabran.com.br"
+      - "--entrypoints.websecure.http.tls.domains[1].sans=*.nacj.kabran.com.br"
+      - "--entrypoints.websecure.http.tls.domains[2].main=tricket.kabran.com.br"
+      - "--entrypoints.websecure.http.tls.domains[2].sans=*.tricket.kabran.com.br"
+      - "--entrypoints.websecure.http.tls.domains[3].main=compliance.kabran.com.br"
+      - "--entrypoints.websecure.http.tls.domains[3].sans=*.compliance.kabran.com.br"
+      - "--entrypoints.websecure.http.tls.domains[4].main=projeto.kabran.com.br"
+      - "--entrypoints.websecure.http.tls.domains[4].sans=*.projeto.kabran.com.br"
+      - "--entrypoints.websecure.http.tls.domains[5].main=bolt.kabran.com.br"
+      - "--entrypoints.websecure.http.tls.domains[5].sans=*.bolt.kabran.com.br"
+      
+      # Certificados Let's Encrypt com Cloudflare DNS Challenge
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge=true"
+      - "--certificatesresolvers.cloudflare.acme.email=${CLOUDFLARE_EMAIL}"
+      - "--certificatesresolvers.cloudflare.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare"
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge.delayBeforeCheck=0"
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1:53,1.0.0.1:53"
+      - "--certificatesresolvers.cloudflare.acme.caserver=https://acme-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.cloudflare.acme.keyType=EC256"
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge.disablepropagationcheck=false"
+      
+      # Logs
+      - "--log.level=INFO"
+      - "--accesslog=true"
+
+networks:
+  traefik-proxy:
+    external: true

@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  cappta-fake-simulator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cappta-fake-simulator
+    ports:
+      - "8000:8000"
+    environment:
+      # Environment
+      - ENVIRONMENT=dev
+      - DEBUG=true
+      
+      # API Configuration  
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      
+      # Asaas Integration (use environment variables or secrets in production)
+      - ASAAS_API_KEY=${ASAAS_API_KEY:-sandbox_key_change_me}
+      - ASAAS_BASE_URL=https://sandbox.asaas.com/api/v3
+      - CAPPTA_MASTER_ACCOUNT_ID=${CAPPTA_MASTER_ACCOUNT_ID:-acc_cappta_fake}
+      
+      # Tricket Integration
+      - TRICKET_WEBHOOK_URL=${TRICKET_WEBHOOK_URL:-http://host.docker.internal:54321/functions/v1/cappta_webhook_receiver}
+      - TRICKET_WEBHOOK_SECRET=${TRICKET_WEBHOOK_SECRET:-webhook_secret_change_me}
+      
+      # Security
+      - API_TOKEN=${API_TOKEN:-cappta_simulator_token_dev_change_me}
+      
+      # Database (SQLite file will be persisted in volume)
+      - DATABASE_URL=sqlite:///./data/cappta_simulator.db
+      
+    volumes:
+      # Persist SQLite database
+      - cappta_data:/app/data
+      # Mount configuration files for development
+      - ./config:/app/config:ro
+      
+    networks:
+      - cappta-network
+      
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+      
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  cappta_data:
+    driver: local
+
+networks:
+  cappta-network:
+    driver: bridge

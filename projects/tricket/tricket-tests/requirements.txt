@@ -1,0 +1,4 @@
+supabase
+rich
+typer
+python-dotenv

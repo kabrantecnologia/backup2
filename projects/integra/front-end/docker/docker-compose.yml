@@ -1,0 +1,20 @@
+name: integra-app
+services:
+  integra:
+    image: integra:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: integra
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.integra.rule=Host(`app.staging.caminhosparajesus.org.br`)"
+      - "traefik.http.routers.integra.entrypoints=web,websecure"
+      - "traefik.http.routers.integra.tls.certresolver=cloudflare"
+      - "traefik.http.services.integra.loadbalancer.server.port=80"
+    networks:
+      - traefik-proxy
+networks:
+  traefik-proxy:
+    external: true
